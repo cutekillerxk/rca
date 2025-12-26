@@ -1,0 +1,68 @@
+services:
+  namenode:
+    image: myhadoop-namenode:v1
+    container_name: namenode
+    hostname: namenode
+    entrypoint: /bin/bash
+    command: -c "service ssh start && trap 'wait' CHLD; while true; do sleep 86400 & wait; done"
+    ports:
+      - "0.0.0.0:9870:9870"   # NameNode Web UI (显式绑定到所有接口)
+      - "0.0.0.0:9000:9000"   # HDFS RPC
+      - "0.0.0.0:8020:8020"   # HDFS RPC (alternative)
+      - "0.0.0.0:50070:50070" # NameNode Web UI (Hadoop 2.x, if applicable)
+      - "0.0.0.0:2222:22"     # SSH (mapped to 2222 to avoid conflict with host SSH)
+    networks:
+      - hadoop-network
+    volumes:
+      - hadoop_namenode:/usr/local/hadoop/hdfs/namenode
+    restart: unless-stopped
+    environment:
+      - CLUSTER_NAME=myhadoop
+
+  datanode1:
+    image: myhadoop-datanode1:v1
+    container_name: datanode1
+    hostname: datanode1
+    entrypoint: /bin/bash
+    command: -c "service ssh start && trap 'wait' CHLD; while true; do sleep 86400 & wait; done"
+    ports:
+      - "0.0.0.0:9864:9864"   # DataNode Web UI (显式绑定到所有接口)
+      - "0.0.0.0:2223:22"     # SSH (mapped to 2223)
+    networks:
+      - hadoop-network
+    volumes:
+      - hadoop_datanode1:/usr/local/hadoop/hdfs/datanode
+    depends_on:
+      - namenode
+    restart: unless-stopped
+
+  datanode2:
+    image: myhadoop-datanode2:v1
+    container_name: datanode2
+    hostname: datanode2
+    entrypoint: /bin/bash
+    command: -c "service ssh start && trap 'wait' CHLD; while true; do sleep 86400 & wait; done"
+    ports:
+      - "0.0.0.0:9865:9864"   # DataNode Web UI (mapped to 9865 to avoid conflict, 显式绑定)
+      - "0.0.0.0:2224:22"     # SSH (mapped to 2224)
+    networks:
+      - hadoop-network
+    volumes:
+      - hadoop_datanode2:/usr/local/hadoop/hdfs/datanode
+    depends_on:
+      - namenode
+    restart: unless-stopped
+
+networks:
+  hadoop-network:
+    driver: bridge
+    name: hadoop-network
+
+volumes:
+  hadoop_namenode:
+    name: hadoop_namenode
+  hadoop_datanode1:
+    name: hadoop_datanode1
+  hadoop_datanode2:
+    name: hadoop_datanode2
+

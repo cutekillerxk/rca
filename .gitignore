@@ -1,0 +1,92 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# 虚拟环境
+venv/
+env/
+ENV/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 日志文件
+logs/
+*.log
+
+# 数据文件
+metrics/
+result/
+*.txt
+*.json
+!requirements*.txt
+!environment.yml
+
+# 导出文件
+lc_agent/exports/
+*.docx
+*.pdf
+
+# 模型文件（如果不想上传大文件）
+models/
+D:/models/
+*.bin
+*.pt
+*.pth
+*.onnx
+
+# 知识库向量存储（可能很大）
+knowledge_base/
+*.faiss
+*.index
+
+# 环境变量
+.env
+.env.local
+
+# 系统文件
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 临时文件
+*.tmp
+*.temp
+*.bak
+
+# 测试覆盖率
+.coverage
+htmlcov/
+.pytest_cache/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# 其他
+*.pyc
+*.pyo
+*.pyd
+

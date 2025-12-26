@@ -1,0 +1,83 @@
+   version: "3"
+
+   services:
+     namenode:
+       image: bde2020/hadoop-namenode:2.0.0-hadoop3.2.1-java8
+       container_name: namenode
+       hostname: namenode
+       ports:
+         - "9870:9870"   # NameNode Web UI
+         - "9000:9000"   # HDFS
+       environment:
+         - CLUSTER_NAME=test
+       volumes:
+         - hadoop_namenode:/hadoop/dfs/name
+       networks:
+         - hadoop-network
+
+     datanode:
+       image: bde2020/hadoop-datanode:2.0.0-hadoop3.2.1-java8
+       container_name: datanode
+       hostname: datanode
+       ports:
+         - "9864:9864"   # DataNode Web UI
+       environment:
+         - SERVICE_PRECONDITION=namenode:9870
+       volumes:
+         - hadoop_datanode:/hadoop/dfs/data
+       networks:
+         - hadoop-network
+       depends_on:
+         - namenode
+
+     resourcemanager:
+       image: bde2020/hadoop-resourcemanager:2.0.0-hadoop3.2.1-java8
+       container_name: resourcemanager
+       hostname: resourcemanager
+       ports:
+         - "8088:8088"   # ResourceManager Web UI
+       environment:
+         - SERVICE_PRECONDITION=namenode:9870 datanode:9864
+       networks:
+         - hadoop-network
+       depends_on:
+         - namenode
+         - datanode
+
+     nodemanager:
+       image: bde2020/hadoop-nodemanager:2.0.0-hadoop3.2.1-java8
+       container_name: nodemanager
+       hostname: nodemanager
+       ports:
+         - "8042:8042"   # NodeManager Web UI
+       environment:
+         - SERVICE_PRECONDITION=namenode:9870 datanode:9864 resourcemanager:8088
+       networks:
+         - hadoop-network
+       depends_on:
+         - namenode
+         - datanode
+         - resourcemanager
+
+     historyserver:
+       image: bde2020/hadoop-historyserver:2.0.0-hadoop3.2.1-java8
+       container_name: historyserver
+       hostname: historyserver
+       ports:
+         - "8188:8188"   # HistoryServer Web UI
+       environment:
+         - SERVICE_PRECONDITION=namenode:9870 datanode:9864 resourcemanager:8088
+       networks:
+         - hadoop-network
+       depends_on:
+         - namenode
+         - datanode
+         - resourcemanager
+
+   networks:
+     hadoop-network:
+       driver: bridge
+
+   volumes:
+     hadoop_namenode:
+     hadoop_datanode:
